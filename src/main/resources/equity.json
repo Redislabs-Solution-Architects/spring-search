@@ -1,0 +1,70 @@
+{
+  "securityName": "PHX MINERALS INC",
+  "inverseLeveraged": "notApplicable",
+  "transactionTypes": {
+    "buy": false,
+    "sell": false,
+    "toaIn": false,
+    "toaOut": false
+  },
+  "securityId": "c773c27c0a86f86b4a5faf2fa7f3a6c4",
+  "symbol": "PHX",
+  "platformTradingRestrictionIndicator": false,
+  "securityClassificationLevel1": "EQUITY",
+  "securityClassificationLevel2": "COMMON_STOCK",
+  "platformFractionalTradingEligible": false,
+  "tradingEligible": true,
+  "cusip": "69291A100",
+  "isin": "US69291A1007",
+  "securityClassificationLevel3": null,
+  "ipoStartDate": null,
+  "securityType": "NMS",
+  "cnsEligibilityIndicator": true,
+  "ofacSanctionedIndicator": false,
+  "rule144AIndicator": false,
+  "regulationSIndicator": false,
+  "previousClosePriceUnadjusted": 3,
+  "previousClosePriceAdjusted": 2.99,
+  "previousClosePriceAdjustedDate": "2024-02-09T00:00:00.000Z",
+  "tickSize": 0.01,
+  "roundLot": 100,
+  "corporateActionTradingImpacted": false,
+  "corporateActionEvents": [
+    {
+      "corporateActionId": "69291A100INTERIMPROXY20221110Z",
+      "corporateActionType": "ProxyToLoadPositions"
+    },
+    {
+      "corporateActionId": "321426183",
+      "corporateActionType": "CashDividend"
+    },
+    {
+      "corporateActionId": "69291A100PROXY20230109P",
+      "corporateActionType": "ProxyFulfillment"
+    }
+  ],
+  "tickerDesignation": "A",
+  "dtcDepositActivityChillIndicator": false,
+  "dtcChillWT": false,
+  "dtcChillDO": false,
+  "dtcChillSegregation": false,
+  "dtcPledgeChillIndicator": false,
+  "dtcGlobalLockIndicator": false,
+  "globalIssue": false,
+  "illiquidIndicator": false,
+  "derivativeBased": false,
+  "primaryExchange": "NYSE",
+  "securityCurrency": "USD",
+  "security12JRestrictionIndicator": false,
+  "dtcGlobalLockReason": "Security is not globally locked. Reason is not applicable",
+  "symbolSuffix": "",
+  "symbolWithoutSuffix": "PHX",
+  "averageVolume20Day": 83770,
+  "previousClosePriceUnadjustedDate": "2024-02-12T00:00:00.000Z",
+  "exDividendORDistributionDate": "2023-05-19T00:00:00.000Z",
+  "marginEligible": false,
+  "createId": "batch.user",
+  "createTs": "2022-08-11T17:19:49.281Z",
+  "updateId": "batch.user",
+  "updateTs": "2024-02-12T23:39:15.916Z"
+}

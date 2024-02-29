@@ -1,0 +1,26 @@
+{
+  "securityId": "807b07fcc8cc65b6d251580ce51de0e2",
+  "symbol": "SPY261218P760",
+  "securityName": "SPY DEC 18 2026 $760 PUT",
+  "securityClassificationLevel1": "OPTION",
+  "securityClassificationLevel2": "NOT_APPLICABLE",
+  "transactionTypes": {
+    "buy": false,
+    "sell": false,
+    "toaIn": false,
+    "toaOut": false
+  },
+  "tradingEligible": true,
+  "marginEligible": false,
+  "parentSymbol": "SPY",
+  "expirationDate": "2026-12-18",
+  "strikePrice": 760,
+  "multiplier": 100,
+  "optionType": "P",
+  "optionStyle": "A",
+  "platformTradingRestrictionIndicator": false,
+  "createId": "batch.user",
+  "createTs": "2024-02-29T02:07:01.322Z",
+  "updateId": "batch.user",
+  "updateTs": "2024-02-29T02:07:01.322Z"
+}

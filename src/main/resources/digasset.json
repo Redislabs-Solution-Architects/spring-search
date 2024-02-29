@@ -1,0 +1,44 @@
+{
+  "securityId": "d29528cf15828bc3ce38da5a2d29a1dd",
+  "symbol": "ETH/USD",
+  "securityName": "ETHEREUM",
+  "securityClassificationLevel1": "DIGITAL_ASSET",
+  "securityClassificationLevel2": "CRYPTO_CURRENCY",
+  "tradingEligible": true,
+  "platformTradingRestrictionIndicator": false,
+  "marginEligible": false,
+  "transactionTypes": {
+    "buy": false,
+    "sell": false,
+    "toaIn": false,
+    "toaOut": false
+  },
+  "baseCurrency": "ETH",
+  "baseIncrement": "8",
+  "baseMinSize": "",
+  "baseMaxSize": "",
+  "quoteCurrency": "USD",
+  "quoteIncrement": "2",
+  "quoteMinSize": "1",
+  "quoteMaxSize": "1000000",
+  "order": {
+    "baseIncrement": "8",
+    "baseMinSize": "",
+    "baseMaxSize": "",
+    "quoteIncrement": "2",
+    "quoteMinSize": "1",
+    "quoteMaxSize": "1000000"
+  },
+  "toa": {
+    "baseIncrement": "18",
+    "baseMinSize": "",
+    "baseMaxSize": "",
+    "quoteIncrement": "2",
+    "quoteMinSize": "1",
+    "quoteMaxSize": "1000000"
+  },
+  "createId": "batch.user",
+  "createTs": "2024-02-16T16:47:00.918Z",
+  "updateId": "batch.user",
+  "updateTs": "2024-02-29T15:42:55.573Z"
+}
