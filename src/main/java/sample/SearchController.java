@@ -168,7 +168,7 @@ public class SearchController {
 
     @GetMapping("/search")
     public SearchResponse search(@RequestParam(required = false, defaultValue = "*") String term,
-                                    @RequestParam(required = false, defaultValue = "0") String amount) {
+                                 @RequestParam(required = false, defaultValue = "0") String amount) {
         List<SearchValue> results = new ArrayList<>();
 
         long startTime = System.currentTimeMillis();
