@@ -1,6 +1,9 @@
 package sample;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
@@ -19,6 +22,7 @@ import java.util.*;
 @RestController
 public class SecurityController {
     private static final Logger logger = LoggerFactory.getLogger(SecurityController.class);
+    private static final String INDEX_NAME = "security-idx";
 
     private final JedisPooled jedis;
 
@@ -26,7 +30,8 @@ public class SecurityController {
         this.jedis = jedis;
     }
 
-    private class Security {
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    private static class Security {
         private String securityId;
         private String securityName;
         private String securityType;
@@ -45,6 +50,9 @@ public class SecurityController {
             this.isin = isin;
             this.optionType = optionType;
             this.optionStyle = optionStyle;
+        }
+
+        public Security() {
         }
 
         public String getSecurityId() {
@@ -114,19 +122,19 @@ public class SecurityController {
 
     private void createIndex(JedisPooled client) {
         try {
-            client.ftDropIndex("idx1");
+            client.ftDropIndex(INDEX_NAME);
         } catch (Exception e) {
             // Throws exception if index not there; we ignore
         }
 
-        Schema schema = new Schema().addTagField("securityId")
-                .addTagField("cusip")
-                .addTextField("securityName", 1.0)
-                .addTagField("isin")
-                .addTagField("symbol");
+        Schema schema = new Schema().addTagField("$securityId").as("securityId")
+                .addTagField("$.cusip").as("cusip")
+                .addTextField("$.securityName", 1.0).as("securityName")
+                .addTagField("$.isin").as("isin")
+                .addTagField("$.symbol").as("symbol");
         IndexDefinition rule = new IndexDefinition(IndexDefinition.Type.JSON)
                 .setPrefixes(new String[]{"securities:"});
-        client.ftCreate("security-idx", IndexOptions.defaultOptions().setDefinition(rule), schema);
+        client.ftCreate(INDEX_NAME, IndexOptions.defaultOptions().setDefinition(rule), schema);
     }
 
     private Security getSecurity(String fileName) {
@@ -142,16 +150,26 @@ public class SecurityController {
     }
 
     private class SearchValue {
+        private String name;
         private String symbol;
         private String id;
         private String cusip;
         private String isin;
 
-        public SearchValue(String symbol, String id, String cusip, String isin) {
+        public SearchValue(String name, String symbol, String id, String cusip, String isin) {
+            this.name = name;
             this.symbol = symbol;
             this.id = id;
             this.cusip = cusip;
             this.isin = isin;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
         }
 
         public String getSymbol() {
@@ -205,6 +223,13 @@ public class SecurityController {
         List<Security> securities = new ArrayList<>();
 
         Security security = getSecurity("equity.json");
+        securities.add(security);
+
+        security = getSecurity("digasset.json");
+        securities.add(security);
+
+        security = getSecurity("option.json");
+        securities.add(security);
 
         long startTime = System.currentTimeMillis();
 
@@ -214,10 +239,16 @@ public class SecurityController {
         // Create a pipeline object so we can batch Redis commands
         Pipeline pipeline = jedis.pipelined();
         int numSent = 0;
+        ObjectMapper om = new ObjectMapper();
 
         for (int i = 0; i < securities.size(); i++) {
-
-            pipeline.jsonSet("securities:" + security.getSecurityId(), securities.get(i));
+            try {
+                Security sec = securities.get(i);
+                logger.info(String.format("Inserting %s with symbol %s", sec.getSecurityId(), sec.getSymbol()));
+                pipeline.jsonSet("securities:" + sec.getSecurityId(), om.writeValueAsString(sec));
+            } catch (JsonProcessingException e) {
+                logger.info(String.format("Exception with json object %s", e.getMessage()));
+            }
 
             // Send commands in a batch of 1000 (or whatever your favorite number is)
             if (numSent > 0 && numSent % 1000 == 0) {
@@ -229,8 +260,6 @@ public class SecurityController {
 
         long insertDoneTime = System.currentTimeMillis();
 
-        logger.info(String.format("Inserting %d objects took %d milliseconds", numSent, insertDoneTime - startTime));
-
         return String.format("Inserting %d objects took %d milliseconds", numSent, insertDoneTime - startTime);
     }
 
@@ -241,23 +270,37 @@ public class SecurityController {
         long startTime = System.currentTimeMillis();
         long searchTime = 0;
 
-        Query q = new Query(String.format("(@securityId:%s)|(@cusip:%s)|(@isin:%s)|(symbol:%s)", term, term, term, term)).limit(0, 40);
+        String queryString = "";
+
+        if ("*".equals(term)) {
+            queryString = "*";
+        } else {
+            // search for name OR ID OR cusip OR isin OR symbol
+            queryString = String.format("(@securityName:%s)|(@securityId:{%s})|(@cusip:{%s})|(@isin:{%s})|(@symbol:{%s})", term, term, term, term, term);
+        }
+        Query q = new Query(queryString);
 
         int numFound = 0;
         try {
-            SearchResult res = jedis.ftSearch("idx1", q);
+            SearchResult res = jedis.ftSearch(INDEX_NAME, q);
             List<Document> docs = res.getDocuments();
             long endTime = System.currentTimeMillis();
 
             numFound = docs.size();
             for (Document doc : docs) {
-                SearchValue val = new SearchValue(doc.getString("securityId"), doc.getString("isin"), doc.getString("cusip"), doc.getString("symbol"));
-                results.add(val);
+                ObjectMapper om = new ObjectMapper();
+                try {
+                    Security sec = om.readValue(doc.getString("$"), Security.class);
+                    SearchValue val = new SearchValue(sec.getSecurityName(), sec.getSymbol(), sec.getSecurityId(), sec.getCusip(), sec.getIsin());
+                    results.add(val);
+                } catch (JsonProcessingException e) {
+                    logger.info("Failed to parse JSON result");
+                }
             }
             searchTime = endTime - startTime;
             logger.info(String.format("Searching for %s took %d milliseconds and returned %d docs", term, searchTime, docs.size()));
         } catch (JedisDataException jedisDataException) {
-            // Could be no index found
+            logger.info(String.format("JedisDataException %s", jedisDataException.getMessage()));
         }
 
         SearchResponse result = new SearchResponse(numFound, searchTime, results);
