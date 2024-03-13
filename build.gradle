@@ -8,16 +8,23 @@ group = 'sample'
 version = '0.0.1-SNAPSHOT'
 
 java {
-	sourceCompatibility = '21'
+	sourceCompatibility = '17'
 }
 
 repositories {
 	mavenCentral()
 }
 
+ext {
+	redisOmVersion = '0.8.9'
+}
+
 dependencies {
+	implementation 'org.projectlombok:lombok:1.18.30'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'redis.clients:jedis:5.1.0'
+	implementation "com.redis.om:redis-om-spring:$redisOmVersion"
+	annotationProcessor "com.redis.om:redis-om-spring:$redisOmVersion"
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
