@@ -9,6 +9,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.geo.Point;
 import sample.domain.Company;
+import sample.domain.CompanyMeta;
 import sample.repositories.CompanyRepository;
 
 import java.util.Arrays;
