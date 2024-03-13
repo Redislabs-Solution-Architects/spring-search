@@ -4,7 +4,7 @@ A Spring-Boot webapp with RESTful endpoints to demonstrate Redis Search with Jav
 
 ## Prerequisites
 
-- Java 21 though may work with earlier versions
+- Java 17
 - Redis
 
 ## Run
